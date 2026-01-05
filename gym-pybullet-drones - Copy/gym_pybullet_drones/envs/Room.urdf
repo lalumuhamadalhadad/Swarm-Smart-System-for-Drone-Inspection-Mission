@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<robot name="maze_layout">
+
+  <!-- Define the base link (floor) -->
+  <link name="base_link">
+    <inertial>
+      <mass value="100.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="100.0" ixy="0.0" ixz="0.0" iyy="100.0" iyz="0.0" izz="100.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 15 0.1"/> <!-- Floor size: 15m x 15m x 10cm -->
+      </geometry>
+      <material name="floor_material">
+        <!-- White base color - texture will be applied programmatically -->
+        <color rgba="1 1 1 1"/> 
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 15 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- North Wall -->
+  <link name="north_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0 7.5 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/> <!-- Wall: 15m wide, 20cm thick, 3m high -->
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/> <!-- Light gray walls -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- South Wall -->
+  <link name="south_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0 -7.5 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- East Wall -->
+  <link name="east_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="7.5 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- West Wall -->
+  <link name="west_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="-7.5 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Interior Wall 1 - Creates maze-like structure -->
+  <link name="interior_wall_1">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="-3 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-3 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 6 3"/> <!-- 6m long interior wall -->
+      </geometry>
+      <material name="interior_wall_material">
+        <color rgba="0.8 0.8 0.8 1"/> <!-- Slightly darker gray for interior walls -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-3 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 6 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Interior Wall 2 -->
+  <link name="interior_wall_2">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="3 -2 1.5" rpy="0 0 0"/>
+      <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="3 -2 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="4 0.2 3"/> <!-- Horizontal wall -->
+      </geometry>
+      <material name="interior_wall_material">
+        <color rgba="0.8 0.8 0.8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="3 -2 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="4 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Floor crack/damage patch -->
+  <link name="crack_patch">
+    <visual>
+      <origin xyz="-2 -6 0.051" rpy="0 0 1.57"/>
+      <geometry>
+        <box size="1 0.1 0.002"/> <!-- Thin crack line -->
+      </geometry>
+      <material name="crack_material">
+        <color rgba="0.2 0.1 0.1 1"/> <!-- Dark brown crack -->
+      </material>
+    </visual>
+  </link>
+
+  <!-- Define all joints as fixed -->
+  <joint name="base_to_north_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="north_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_south_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="south_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_east_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="east_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_west_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="west_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_interior_wall_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="interior_wall_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_interior_wall_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="interior_wall_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_crack_patch" type="fixed">
+    <parent link="base_link"/>
+    <child link="crack_patch"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>

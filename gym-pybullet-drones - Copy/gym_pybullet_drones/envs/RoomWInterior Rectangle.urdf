@@ -1,0 +1,439 @@
+<?xml version="1.0"?>
+<robot name="rectangular_building">
+
+  <!-- Define the base link (floor) -->
+  <link name="base_link">
+    <inertial>
+      <mass value="100.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="100.0" ixy="0.0" ixz="0.0" iyy="100.0" iyz="0.0" izz="100.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="50 20 0.1"/> <!-- Floor size: 50m x 20m x 10cm -->
+      </geometry>
+      <material name="floor_material">
+        <!-- White base color - texture will be applied programmatically -->
+        <color rgba="1 1 1 1"/> 
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="50 20 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- North Wall (long side) -->
+  <link name="north_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0 10 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 10 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="50 0.2 3"/> <!-- Wall: 50m wide, 20cm thick, 3m high -->
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/> <!-- Light gray walls -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 10 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="50 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- South Wall (long side) -->
+  <link name="south_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0 -10 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -10 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="50 0.2 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -10 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="50 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- East Wall (short side) -->
+  <link name="east_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="25 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="25 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 20 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="25 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 20 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- West Wall (short side) -->
+  <link name="west_wall">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="-25 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-25 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 20 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.9 0.9 0.9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-25 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 20 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Floor crack/damage patch -->
+  <link name="crack_patch">
+    <visual>
+      <origin xyz="-10 -8 0.051" rpy="0 0 1.57"/>
+      <geometry>
+        <box size="1 0.1 0.002"/> <!-- Thin crack line -->
+      </geometry>
+      <material name="crack_material">
+        <color rgba="0.2 0.1 0.1 1"/> <!-- Dark brown crack -->
+      </material>
+    </visual>
+  </link>
+
+  <!-- INTERIOR OBSTACLES -->
+
+  <!-- Central Support Pillars -->
+  <link name="pillar_1">
+    <inertial>
+      <mass value="50.0"/>
+      <origin xyz="-10 5 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-10 5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.6" length="3"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/> <!-- Gray pillars -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-10 5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.6" length="3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="pillar_2">
+    <inertial>
+      <mass value="50.0"/>
+      <origin xyz="10 -5.5 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="10 -5.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.6" length="3"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="10 -5.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.6" length="3"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+
+  <!-- Emergency Equipment Stations -->
+  <link name="emergency_station_1">
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="-5 5.5 0.75" rpy="0 0 0"/>
+      <inertia ixx="3.0" ixy="0.0" ixz="0.0" iyy="3.0" iyz="0.0" izz="3.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-5 5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+      <material name="emergency_material">
+        <color rgba="0.9 0.2 0.2 1"/> <!-- Red emergency equipment -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-5 5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="emergency_station_2">
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="-5 -5.5 0.75" rpy="0 0 0"/>
+      <inertia ixx="3.0" ixy="0.0" ixz="0.0" iyy="3.0" iyz="0.0" izz="3.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-5 -5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+      <material name="emergency_material">
+        <color rgba="0.9 0.2 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-5 -5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="emergency_station_3">
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="10 5.5 0.75" rpy="0 0 0"/>
+      <inertia ixx="3.0" ixy="0.0" ixz="0.0" iyy="3.0" iyz="0.0" izz="3.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="10 5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+      <material name="emergency_material">
+        <color rgba="0.9 0.2 0.2 1"/> <!-- Red emergency equipment -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="10 5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="emergency_station_4">
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="18 -5.5 0.75" rpy="0 0 0"/>
+      <inertia ixx="3.0" ixy="0.0" ixz="0.0" iyy="3.0" iyz="0.0" izz="3.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="18 -5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+      <material name="emergency_material">
+        <color rgba="0.9 0.2 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="18 -5.5 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="2 1 1.5"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Small Support Pillars -->
+  <link name="small_pillar_1">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="22 8 1" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="22 8 1" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="2"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="22 8 1" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="2"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="small_pillar_2">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="22 -8 1" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="22 -8 1" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="2"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="22 -8 1" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="2"/>
+      </geometry>
+    </collision>
+  </link>
+
+  
+  <link name="small_pillar_3">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="22 8 1" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="18 -8 1" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="2"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="18 8 1" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="2"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Define all joints as fixed -->
+  <joint name="base_to_north_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="north_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_south_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="south_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_east_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="east_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_west_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="west_wall"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_crack_patch" type="fixed">
+    <parent link="base_link"/>
+    <child link="crack_patch"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- OBSTACLE JOINTS -->
+  <joint name="base_to_pillar_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="pillar_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_pillar_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="pillar_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_emergency_station_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="emergency_station_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_emergency_station_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="emergency_station_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_emergency_station_3" type="fixed">
+    <parent link="base_link"/>
+    <child link="emergency_station_3"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_emergency_station_4" type="fixed">
+    <parent link="base_link"/>
+    <child link="emergency_station_4"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_small_pillar_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="small_pillar_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_small_pillar_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="small_pillar_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_small_pillar_3" type="fixed">
+    <parent link="base_link"/>
+    <child link="small_pillar_3"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>

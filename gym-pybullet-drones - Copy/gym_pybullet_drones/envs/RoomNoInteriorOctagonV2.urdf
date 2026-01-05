@@ -1,0 +1,289 @@
+<?xml version="1.0"?>
+<robot name="octagonal_building">
+
+ <!-- Define the base link (octagonal floor) -->
+ <link name="base_link">
+   <inertial>
+     <mass value="100.0"/>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+     <inertia ixx="100.0" ixy="0.0" ixz="0.0" iyy="100.0" iyz="0.0" izz="100.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+     <geometry>
+       <!-- Octagonal floor approximated using cylinder with 8 sides -->
+       <cylinder radius="17.35" length="0.1"/>
+     </geometry>
+     <material name="floor_material">
+       <color rgba="1 1 1 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+     <geometry>
+       <cylinder radius="17.35" length="0.1"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 1 (0 degrees - East) -->
+ <link name="wall_1">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="17.35 0 1.5" rpy="0 0 0"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="17.35 0 1.5" rpy="0 0 0"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="17.35 0 1.5" rpy="0 0 0"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 2 (45 degrees - Northeast) -->
+ <link name="wall_2">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="12.27 12.27 1.5" rpy="0 0 0.785398"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="12.27 12.27 1.5" rpy="0 0 0.785398"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="12.27 12.27 1.5" rpy="0 0 0.785398"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 3 (90 degrees - North) -->
+ <link name="wall_3">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="0 17.35 1.5" rpy="0 0 1.570796"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="0 17.35 1.5" rpy="0 0 1.570796"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="0 17.35 1.5" rpy="0 0 1.570796"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 4 (135 degrees - Northwest) -->
+ <link name="wall_4">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="-12.27 12.27 1.5" rpy="0 0 2.356194"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="-12.27 12.27 1.5" rpy="0 0 2.356194"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="-12.27 12.27 1.5" rpy="0 0 2.356194"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 5 (180 degrees - West) -->
+ <link name="wall_5">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="-17.35 0 1.5" rpy="0 0 3.141593"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="-17.35 0 1.5" rpy="0 0 3.141593"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="-17.35 0 1.5" rpy="0 0 3.141593"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 6 (225 degrees - Southwest) -->
+ <link name="wall_6">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="-12.27 -12.27 1.5" rpy="0 0 3.926991"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="-12.27 -12.27 1.5" rpy="0 0 3.926991"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="-12.27 -12.27 1.5" rpy="0 0 3.926991"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 7 (270 degrees - South) -->
+ <link name="wall_7">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="0 -17.35 1.5" rpy="0 0 4.712389"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="0 -17.35 1.5" rpy="0 0 4.712389"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="0 -17.35 1.5" rpy="0 0 4.712389"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Octagon Wall 8 (315 degrees - Southeast) -->
+ <link name="wall_8">
+   <inertial>
+     <mass value="5.0"/>
+     <origin xyz="12.27 -12.27 1.5" rpy="0 0 5.497787"/>
+     <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+   </inertial>
+   <visual>
+     <origin xyz="12.27 -12.27 1.5" rpy="0 0 5.497787"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+     <material name="wall_material">
+       <color rgba="0.9 0.9 0.9 1"/>
+     </material>
+   </visual>
+   <collision>
+     <origin xyz="12.27 -12.27 1.5" rpy="0 0 5.497787"/>
+     <geometry>
+       <box size="0.2 14.4 3"/>
+     </geometry>
+   </collision>
+ </link>
+
+ <!-- Floor crack/damage patch -->
+ <link name="crack_patch">
+   <visual>
+     <origin xyz="-5 -3 0.051" rpy="0 0 1.57"/>
+     <geometry>
+       <box size="1 0.1 0.002"/>
+     </geometry>
+     <material name="crack_material">
+       <color rgba="0.2 0.1 0.1 1"/>
+     </material>
+   </visual>
+ </link>
+
+ <!-- Define all joints as fixed -->
+ <joint name="base_to_wall_1" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_1"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_wall_2" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_2"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_wall_3" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_3"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_wall_4" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_4"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_wall_5" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_5"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_wall_6" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_6"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_wall_7" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_7"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_wall_8" type="fixed">
+   <parent link="base_link"/>
+   <child link="wall_8"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+ <joint name="base_to_crack_patch" type="fixed">
+   <parent link="base_link"/>
+   <child link="crack_patch"/>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+ </joint>
+
+</robot>

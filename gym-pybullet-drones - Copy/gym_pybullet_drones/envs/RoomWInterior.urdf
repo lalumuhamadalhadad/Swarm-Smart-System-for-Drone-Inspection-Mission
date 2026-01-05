@@ -1,0 +1,602 @@
+<?xml version="1.0"?>
+<robot name="indoor_environment">
+
+  <!-- Floor -->
+  <link name="base_link">
+    <inertial>
+      <mass value="1000.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1000.0" ixy="0.0" ixz="0.0" iyy="1000.0" iyz="0.0" izz="1000.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 15 0.1"/>
+      </geometry>
+      <material name="floor_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 15 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Outer Walls -->
+  <link name="north_wall">
+    <inertial>
+      <mass value="50.0"/>
+      <origin xyz="0 7.5 1.5" rpy="0 0 0"/>
+      <inertia ixx="50.0" ixy="0.0" ixz="0.0" iyy="50.0" iyz="0.0" izz="50.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="south_wall">
+    <inertial>
+      <mass value="50.0"/>
+      <origin xyz="0 -7.5 1.5" rpy="0 0 0"/>
+      <inertia ixx="50.0" ixy="0.0" ixz="0.0" iyy="50.0" iyz="0.0" izz="50.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -7.5 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="15 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="east_wall">
+    <inertial>
+      <mass value="50.0"/>
+      <origin xyz="7.5 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="50.0" ixy="0.0" ixz="0.0" iyy="50.0" iyz="0.0" izz="50.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="west_wall">
+    <inertial>
+      <mass value="50.0"/>
+      <origin xyz="-7.5 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="50.0" ixy="0.0" ixz="0.0" iyy="50.0" iyz="0.0" izz="50.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-7.5 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.2 15 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- FURNITURE AND OBSTACLES -->
+
+  <!-- Conference Table (Center of room) -->
+  <link name="conference_table_top">
+    <inertial>
+      <mass value="20.0"/>
+      <origin xyz="0 0 0.8" rpy="0 0 0"/>
+      <inertia ixx="20.0" ixy="0.0" ixz="0.0" iyy="20.0" iyz="0.0" izz="20.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.8" rpy="0 0 0"/>
+      <geometry>
+        <box size="3.0 1.5 0.05"/> <!-- Large conference table -->
+      </geometry>
+      <material name="wood_material">
+        <color rgba="0.6 0.4 0.2 1"/> <!-- Brown wood -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.8" rpy="0 0 0"/>
+      <geometry>
+        <box size="3.0 1.5 0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Table Legs -->
+  <link name="table_leg_1">
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="1.3 0.6 0.4" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="1.3 0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+      <material name="metal_material">
+        <color rgba="0.7 0.7 0.7 1"/> <!-- Gray metal -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="1.3 0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="table_leg_2">
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="-1.3 0.6 0.4" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-1.3 0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+      <material name="metal_material">
+        <color rgba="0.7 0.7 0.7 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-1.3 0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="table_leg_3">
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="1.3 -0.6 0.4" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="1.3 -0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+      <material name="metal_material">
+        <color rgba="0.7 0.7 0.7 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="1.3 -0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="table_leg_4">
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="-1.3 -0.6 0.4" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-1.3 -0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+      <material name="metal_material">
+        <color rgba="0.7 0.7 0.7 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-1.3 -0.6 0.4" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.8"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Office Chairs around table -->
+  <link name="chair_1">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 2.5 0.5" rpy="0 0 0"/>
+      <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 2.5 0.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.5 0.5 1.0"/> <!-- Chair back and seat -->
+      </geometry>
+      <material name="fabric_material">
+        <color rgba="0.2 0.2 0.8 1"/> <!-- Blue fabric -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 2.5 0.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.5 0.5 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="chair_2">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 -2.5 0.5" rpy="0 0 0"/>
+      <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -2.5 0.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.5 0.5 1.0"/>
+      </geometry>
+      <material name="fabric_material">
+        <color rgba="0.2 0.2 0.8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -2.5 0.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.5 0.5 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+
+  <!-- Desk with Computer -->
+  <link name="desk">
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="5.0 5.0 0.75" rpy="0 0 0"/>
+      <inertia ixx="15.0" ixy="0.0" ixz="0.0" iyy="15.0" iyz="0.0" izz="15.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="5.0 5.0 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="1.5 0.8 0.05"/> <!-- Desk surface -->
+      </geometry>
+      <material name="wood_material">
+        <color rgba="0.6 0.4 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="5.0 5.0 0.75" rpy="0 0 0"/>
+      <geometry>
+        <box size="1.5 0.8 0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Computer Monitor -->
+  <link name="monitor">
+    <inertial>
+      <mass value="3.0"/>
+      <origin xyz="5.0 5.3 1.1" rpy="0 0 0"/>
+      <inertia ixx="3.0" ixy="0.0" ixz="0.0" iyy="3.0" iyz="0.0" izz="3.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="5.0 5.3 1.1" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.05 0.4"/> <!-- Thin monitor -->
+      </geometry>
+      <material name="screen_material">
+        <color rgba="0.1 0.1 0.1 1"/> <!-- Black screen -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="5.0 5.3 1.1" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.05 0.4"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Bookshelf -->
+  <link name="bookshelf">
+    <inertial>
+      <mass value="25.0"/>
+      <origin xyz="-5.5 3.0 1.0" rpy="0 0 0"/>
+      <inertia ixx="25.0" ixy="0.0" ixz="0.0" iyy="25.0" iyz="0.0" izz="25.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-5.5 3.0 1.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.3 2.0 2.0"/> <!-- Tall bookshelf -->
+      </geometry>
+      <material name="wood_material">
+        <color rgba="0.5 0.3 0.1 1"/> <!-- Dark wood -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-5.5 3.0 1.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.3 2.0 2.0"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Whiteboard -->
+  <link name="whiteboard">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 7.3 1.5" rpy="0 0 0"/>
+      <inertia ixx="5.0" ixy="0.0" ixz="0.0" iyy="5.0" iyz="0.0" izz="5.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 7.3 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="2.0 0.05 1.0"/> <!-- Wall-mounted whiteboard -->
+      </geometry>
+      <material name="whiteboard_material">
+        <color rgba="1 1 1 1"/> <!-- White surface -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 7.3 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="2.0 0.05 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Coffee Table -->
+  <link name="coffee_table">
+    <inertial>
+      <mass value="8.0"/>
+      <origin xyz="3.5 -3.5 0.4" rpy="0 0 0"/>
+      <inertia ixx="8.0" ixy="0.0" ixz="0.0" iyy="8.0" iyz="0.0" izz="8.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="3.5 -3.5 0.4" rpy="0 0 0"/>
+      <geometry>
+        <box size="1.0 0.6 0.05"/> <!-- Low coffee table -->
+      </geometry>
+      <material name="glass_material">
+        <color rgba="0.9 0.9 1.0 0.7"/> <!-- Semi-transparent glass -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="3.5 -3.5 0.4" rpy="0 0 0"/>
+      <geometry>
+        <box size="1.0 0.6 0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Sofa -->
+  <link name="sofa">
+    <inertial>
+      <mass value="30.0"/>
+      <origin xyz="-3.5 -3.5 0.4" rpy="0 0 0"/>
+      <inertia ixx="30.0" ixy="0.0" ixz="0.0" iyy="30.0" iyz="0.0" izz="30.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-3.5 -3.5 0.4" rpy="0 0 0"/>
+      <geometry>
+        <box size="2.0 0.8 0.8"/> <!-- 3-seater sofa -->
+      </geometry>
+      <material name="leather_material">
+        <color rgba="0.4 0.2 0.1 1"/> <!-- Brown leather -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-3.5 -3.5 0.4" rpy="0 0 0"/>
+      <geometry>
+        <box size="2.0 0.8 0.8"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Printer Stand -->
+  <link name="printer_stand">
+    <inertial>
+      <mass value="12.0"/>
+      <origin xyz="6.0 -5.0 0.6" rpy="0 0 0"/>
+      <inertia ixx="12.0" ixy="0.0" ixz="0.0" iyy="12.0" iyz="0.0" izz="12.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="6.0 -5.0 0.6" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.8 0.6 1.2"/> <!-- Printer stand with storage -->
+      </geometry>
+      <material name="metal_material">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="6.0 -5.0 0.6" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.8 0.6 1.2"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Ceiling Light Fixture -->
+  <link name="ceiling_light">
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="0 0 2.8" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 2.8" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="0.2"/>
+      </geometry>
+      <material name="light_material">
+        <color rgba="1 1 0.8 1"/> <!-- Warm light color -->
+      </material>
+    </visual>
+    <!-- No collision for ceiling light -->
+  </link>
+
+  <!-- Floor decorations/obstacles -->
+  <link name="floor_plant">
+    <inertial>
+      <mass value="3.0"/>
+      <origin xyz="2.5 6.0 0.7" rpy="0 0 0"/>
+      <inertia ixx="3.0" ixy="0.0" ixz="0.0" iyy="3.0" iyz="0.0" izz="3.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="2.5 6.0 0.7" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.2" length="1.4"/> <!-- Tall plant pot -->
+      </geometry>
+      <material name="plant_material">
+        <color rgba="0.1 0.6 0.1 1"/> <!-- Green plant -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.5 6.0 0.7" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.2" length="1.4"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ALL JOINTS (Fixed connections to base) -->
+  <joint name="base_to_north_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="north_wall"/>
+  </joint>
+
+  <joint name="base_to_south_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="south_wall"/>
+  </joint>
+
+  <joint name="base_to_east_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="east_wall"/>
+  </joint>
+
+  <joint name="base_to_west_wall" type="fixed">
+    <parent link="base_link"/>
+    <child link="west_wall"/>
+  </joint>
+
+  <joint name="base_to_conference_table" type="fixed">
+    <parent link="base_link"/>
+    <child link="conference_table_top"/>
+  </joint>
+
+  <joint name="base_to_table_leg_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="table_leg_1"/>
+  </joint>
+
+  <joint name="base_to_table_leg_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="table_leg_2"/>
+  </joint>
+
+  <joint name="base_to_table_leg_3" type="fixed">
+    <parent link="base_link"/>
+    <child link="table_leg_3"/>
+  </joint>
+
+  <joint name="base_to_table_leg_4" type="fixed">
+    <parent link="base_link"/>
+    <child link="table_leg_4"/>
+  </joint>
+
+  <joint name="base_to_chair_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="chair_1"/>
+  </joint>
+
+  <joint name="base_to_chair_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="chair_2"/>
+  </joint>
+
+
+  <joint name="base_to_desk" type="fixed">
+    <parent link="base_link"/>
+    <child link="desk"/>
+  </joint>
+
+  <joint name="base_to_monitor" type="fixed">
+    <parent link="base_link"/>
+    <child link="monitor"/>
+  </joint>
+
+  <joint name="base_to_bookshelf" type="fixed">
+    <parent link="base_link"/>
+    <child link="bookshelf"/>
+  </joint>
+
+  <joint name="base_to_whiteboard" type="fixed">
+    <parent link="base_link"/>
+    <child link="whiteboard"/>
+  </joint>
+
+  <joint name="base_to_coffee_table" type="fixed">
+    <parent link="base_link"/>
+    <child link="coffee_table"/>
+  </joint>
+
+  <joint name="base_to_sofa" type="fixed">
+    <parent link="base_link"/>
+    <child link="sofa"/>
+  </joint>
+
+  <joint name="base_to_printer_stand" type="fixed">
+    <parent link="base_link"/>
+    <child link="printer_stand"/>
+  </joint>
+
+  <joint name="base_to_ceiling_light" type="fixed">
+    <parent link="base_link"/>
+    <child link="ceiling_light"/>
+  </joint>
+
+  <joint name="base_to_floor_plant" type="fixed">
+    <parent link="base_link"/>
+    <child link="floor_plant"/>
+  </joint>
+
+</robot>

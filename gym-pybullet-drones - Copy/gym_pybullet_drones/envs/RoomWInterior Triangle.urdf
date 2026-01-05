@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<robot name="triangular_maze_layout">
+
+  <!-- Define the triangular base link (floor) -->
+  <link name="base_link">
+    <inertial>
+      <mass value="100.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="100.0" ixy="0.0" ixz="0.0" iyy="100.0" iyz="0.0" izz="100.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="30 25 0.1"/> <!-- Enlarged to contain triangle -->
+      </geometry>
+      <material name="floor_material">
+        <color rgba="0.9 0.9 0.9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="30 25 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Bottom Wall (base of triangle, horizontal) -->
+  <link name="wall_1">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0 -7.22 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -7.22 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="25 0.2 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.8 0.4 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -7.22 1.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="25 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Left Wall (60 degrees from horizontal) -->
+  <link name="wall_2">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="-6.25 3.61 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-6.25 3.61 1.5" rpy="0 0 1.047"/>
+      <geometry>
+        <box size="25 0.2 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.8 0.4 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-6.25 3.61 1.5" rpy="0 0 1.047"/>
+      <geometry>
+        <box size="25 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Wall (-60 degrees from horizontal) -->
+  <link name="wall_3">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="6.25 3.61 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="6.25 3.61 1.5" rpy="0 0 -1.047"/>
+      <geometry>
+        <box size="25 0.2 3"/>
+      </geometry>
+      <material name="wall_material">
+        <color rgba="0.8 0.4 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="6.25 3.61 1.5" rpy="0 0 -1.047"/>
+      <geometry>
+        <box size="25 0.2 3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Floor crack/damage patch -->
+  <link name="crack_patch">
+    <visual>
+      <origin xyz="-2 -2 0.051" rpy="0 0 1.57"/>
+      <geometry>
+        <box size="1 0.1 0.002"/>
+      </geometry>
+      <material name="crack_material">
+        <color rgba="0.3 0.2 0.1 1"/> <!-- Dark brown crack -->
+      </material>
+    </visual>
+  </link>
+
+  <!-- INTERIOR OBSTACLES -->
+  
+  <!-- Central Pillar -->
+  <link name="central_pillar">
+    <inertial>
+      <mass value="50.0"/>
+      <origin xyz="0 0 1.5" rpy="0 0 0"/>
+      <inertia ixx="10.0" ixy="0.0" ixz="0.0" iyy="10.0" iyz="0.0" izz="10.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="3"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/> <!-- Gray pillar -->
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 1.5" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="3"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+
+  <!-- Small decorative pillars near entrance -->
+  <link name="small_pillar_1">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="-3 -3 0.75" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="-3 -3 0.75" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="1.5"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-3 -3 0.75" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="1.5"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="small_pillar_2">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="3 -3 0.75" rpy="0 0 0"/>
+      <inertia ixx="2.0" ixy="0.0" ixz="0.0" iyy="2.0" iyz="0.0" izz="2.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="3 -3 0.75" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="1.5"/>
+      </geometry>
+      <material name="pillar_material">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="3 -3 0.75" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.3" length="1.5"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+
+  <!-- Fixed joints -->
+  <joint name="base_to_wall_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="wall_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_wall_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="wall_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_wall_3" type="fixed">
+    <parent link="base_link"/>
+    <child link="wall_3"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_crack_patch" type="fixed">
+    <parent link="base_link"/>
+    <child link="crack_patch"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- OBSTACLE JOINTS -->
+  <joint name="base_to_central_pillar" type="fixed">
+    <parent link="base_link"/>
+    <child link="central_pillar"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  
+
+  <joint name="base_to_small_pillar_1" type="fixed">
+    <parent link="base_link"/>
+    <child link="small_pillar_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_to_small_pillar_2" type="fixed">
+    <parent link="base_link"/>
+    <child link="small_pillar_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+
+</robot>
