@@ -1,5 +1,5 @@
 """
-Copyright (c) 2026 Lalu Muhamad Alhadad
+Copyright (c) 2025 Lalu Muhamad Alhadad
 
 This code was developed as part of a Master's thesis under the
 Faculty of Mechanical and Aerospace Engineering,
