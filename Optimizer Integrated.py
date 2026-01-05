@@ -19,361 +19,6 @@ import importlib.util
 
 warnings.filterwarnings('ignore')
 
-
-class GeneticAlgorithmPathOptimizer:
-    """Genetic Algorithm path optimizer for drone swarm"""
-    
-    def __init__(self, population_size=50, generations=100, mutation_rate=0.1, 
-                 crossover_rate=0.8, elite_ratio=0.2):
-        self.population_size = population_size
-        self.generations = generations
-        self.mutation_rate = mutation_rate
-        self.crossover_rate = crossover_rate
-        self.elite_ratio = elite_ratio
-        self.elite_size = int(population_size * elite_ratio)
-        
-    def generate_path_with_ga(self, drone, assigned_points, camera_fov, altitude):
-        """Generate optimal path using genetic algorithm"""
-        if not assigned_points:
-            return [drone['start_position']]
-        
-        print(f"GA Path Optimization: Drone {drone['id']}, {len(assigned_points)} points")
-        
-        # For small point sets, use direct optimization
-        if len(assigned_points) <= 3:
-            return self._generate_simple_path(drone, assigned_points)
-        
-        # Initialize genetic algorithm parameters
-        self.drone_start = drone['start_position']
-        self.points = assigned_points
-        self.camera_fov = camera_fov
-        self.altitude = altitude
-        self.footprint_radius = altitude * math.tan(math.radians(camera_fov / 2))
-        
-        # Run genetic algorithm
-        best_path = self._run_genetic_algorithm()
-        
-        # Convert to waypoint format
-        waypoints = [drone['start_position']]
-        for point_idx in best_path:
-            waypoints.append({
-                'x': assigned_points[point_idx]['x'], 
-                'y': assigned_points[point_idx]['y']
-            })
-        
-        print(f"GA completed: {len(waypoints)} waypoints, fitness: {self._evaluate_path(best_path):.2f}")
-        return waypoints
-    
-    def _generate_simple_path(self, drone, assigned_points):
-        """Simple path for small point sets"""
-        waypoints = [drone['start_position']]
-        remaining = assigned_points.copy()
-        current_pos = drone['start_position']
-        
-        while remaining:
-            nearest = min(remaining, key=lambda p: self._distance(current_pos, p))
-            waypoints.append({'x': nearest['x'], 'y': nearest['y']})
-            current_pos = nearest
-            remaining.remove(nearest)
-        
-        return waypoints
-    
-    def _run_genetic_algorithm(self):
-        """Run the genetic algorithm optimization"""
-        # Initialize population
-        population = self._initialize_population()
-        
-        best_fitness_history = []
-        avg_fitness_history = []
-        
-        for generation in range(self.generations):
-            # Evaluate fitness for all individuals
-            fitness_scores = [self._evaluate_path(individual) for individual in population]
-            
-            # Track progress
-            best_fitness = max(fitness_scores)
-            avg_fitness = sum(fitness_scores) / len(fitness_scores)
-            best_fitness_history.append(best_fitness)
-            avg_fitness_history.append(avg_fitness)
-            
-            # Early termination if converged
-            if generation > 20:
-                recent_improvement = best_fitness_history[-1] - best_fitness_history[-10]
-                if recent_improvement < 0.01:  # Less than 1% improvement in 10 generations
-                    print(f"GA converged at generation {generation}")
-                    break
-            
-            # Selection, crossover, and mutation
-            population = self._evolve_population(population, fitness_scores)
-        
-        # Return best individual
-        final_fitness = [self._evaluate_path(individual) for individual in population]
-        best_individual = population[final_fitness.index(max(final_fitness))]
-        
-        return best_individual
-    
-    def _initialize_population(self):
-        """Initialize random population of path permutations"""
-        population = []
-        n_points = len(self.points)
-        
-        for _ in range(self.population_size):
-            # Create random permutation of point indices
-            individual = list(range(n_points))
-            np.random.shuffle(individual)
-            population.append(individual)
-        
-        # Add some heuristic-based individuals for better initialization
-        population = self._add_heuristic_individuals(population)
-        
-        return population[:self.population_size]
-    
-    def _add_heuristic_individuals(self, population):
-        """Add heuristically generated individuals to improve initial population"""
-        # Nearest neighbor starting from different points
-        for start_idx in range(min(5, len(self.points))):
-            nn_path = self._nearest_neighbor_path(start_idx)
-            if nn_path not in population:
-                population.append(nn_path)
-        
-        # Distance-based sorting
-        distances_from_start = [
-            (i, self._distance(self.drone_start, point)) 
-            for i, point in enumerate(self.points)
-        ]
-        distances_from_start.sort(key=lambda x: x[1])
-        distance_sorted = [idx for idx, _ in distances_from_start]
-        if distance_sorted not in population:
-            population.append(distance_sorted)
-        
-        return population
-    
-    def _nearest_neighbor_path(self, start_idx):
-        """Generate nearest neighbor path starting from specific point"""
-        path = [start_idx]
-        unvisited = set(range(len(self.points))) - {start_idx}
-        current = start_idx
-        
-        while unvisited:
-            nearest = min(unvisited, key=lambda x: self._distance(self.points[current], self.points[x]))
-            path.append(nearest)
-            unvisited.remove(nearest)
-            current = nearest
-        
-        return path
-    
-    def _evaluate_path(self, path):
-        """Evaluate fitness of a path (higher is better)"""
-        if not path:
-            return 0
-        
-        # Calculate components
-        total_distance = self._calculate_path_distance(path)
-        coverage_efficiency = self._calculate_coverage_efficiency(path)
-        waypoint_efficiency = self._calculate_waypoint_efficiency(path)
-        
-        # Multi-objective fitness
-        distance_penalty = total_distance * 0.01  # Penalize long distances
-        coverage_bonus = coverage_efficiency * 100  # Reward good coverage
-        waypoint_bonus = waypoint_efficiency * 50  # Reward efficient waypoints
-        
-        fitness = coverage_bonus + waypoint_bonus - distance_penalty
-        
-        # Add small penalty for very long paths to encourage efficiency
-        if len(path) > len(self.points) * 0.8:
-            fitness -= (len(path) - len(self.points) * 0.8) * 5
-        
-        return max(fitness, 0.1)  # Ensure positive fitness
-    
-    def _calculate_path_distance(self, path):
-        """Calculate total distance for the path"""
-        if not path:
-            return 0
-        
-        total_distance = 0
-        current_pos = self.drone_start
-        
-        for point_idx in path:
-            point = self.points[point_idx]
-            total_distance += self._distance(current_pos, point)
-            current_pos = point
-        
-        return total_distance
-    
-    def _calculate_coverage_efficiency(self, path):
-        """Calculate coverage efficiency based on camera footprint overlap"""
-        if not path:
-            return 0
-        
-        covered_points = set()
-        current_pos = self.drone_start
-        
-        # Check initial coverage from start position
-        initial_coverage = self._get_coverage_at_position(current_pos)
-        covered_points.update(initial_coverage)
-        
-        for point_idx in path:
-            point = self.points[point_idx]
-            coverage = self._get_coverage_at_position(point)
-            covered_points.update(coverage)
-        
-        # Return coverage ratio
-        return len(covered_points) / len(self.points)
-    
-    def _calculate_waypoint_efficiency(self, path):
-        """Calculate efficiency based on number of waypoints needed"""
-        if not path:
-            return 0
-        
-        # Simulate coverage-based waypoint selection
-        essential_waypoints = self._select_essential_waypoints(path)
-        
-        # Efficiency = coverage achieved / waypoints used
-        waypoint_efficiency = len(essential_waypoints) / max(len(path), 1)
-        
-        return waypoint_efficiency
-    
-    def _select_essential_waypoints(self, path):
-        """Select minimum essential waypoints for coverage"""
-        essential = []
-        covered_points = set()
-        current_pos = self.drone_start
-        
-        # Initial coverage
-        initial_coverage = self._get_coverage_at_position(current_pos)
-        covered_points.update(initial_coverage)
-        
-        for point_idx in path:
-            point = self.points[point_idx]
-            coverage = self._get_coverage_at_position(point)
-            new_coverage = set(coverage) - covered_points
-            
-            if new_coverage:  # This waypoint adds new coverage
-                essential.append(point_idx)
-                covered_points.update(coverage)
-            
-            if len(covered_points) >= len(self.points):
-                break
-        
-        return essential
-    
-    def _get_coverage_at_position(self, position):
-        """Get points covered by camera at given position"""
-        covered = []
-        for i, point in enumerate(self.points):
-            distance = self._distance(position, point)
-            if distance <= self.footprint_radius:
-                covered.append(i)
-        return covered
-    
-    def _evolve_population(self, population, fitness_scores):
-        """Evolve population through selection, crossover, and mutation"""
-        # Sort by fitness (descending)
-        sorted_indices = sorted(range(len(fitness_scores)), key=lambda x: fitness_scores[x], reverse=True)
-        sorted_population = [population[i] for i in sorted_indices]
-        
-        new_population = []
-        
-        # Elite selection - keep best individuals
-        new_population.extend(sorted_population[:self.elite_size])
-        
-        # Generate offspring through crossover and mutation
-        while len(new_population) < self.population_size:
-            # Tournament selection for parents
-            parent1 = self._tournament_selection(sorted_population, fitness_scores)
-            parent2 = self._tournament_selection(sorted_population, fitness_scores)
-            
-            # Crossover
-            if np.random.random() < self.crossover_rate:
-                offspring1, offspring2 = self._crossover(parent1, parent2)
-            else:
-                offspring1, offspring2 = parent1.copy(), parent2.copy()
-            
-            # Mutation
-            if np.random.random() < self.mutation_rate:
-                offspring1 = self._mutate(offspring1)
-            if np.random.random() < self.mutation_rate:
-                offspring2 = self._mutate(offspring2)
-            
-            new_population.extend([offspring1, offspring2])
-        
-        return new_population[:self.population_size]
-    
-    def _tournament_selection(self, population, fitness_scores, tournament_size=3):
-        """Tournament selection for parent selection"""
-        tournament_indices = np.random.choice(len(population), tournament_size, replace=False)
-        tournament_fitness = [fitness_scores[i] for i in tournament_indices]
-        winner_idx = tournament_indices[tournament_fitness.index(max(tournament_fitness))]
-        return population[winner_idx].copy()
-    
-    def _crossover(self, parent1, parent2):
-        """Order crossover (OX) for path permutations"""
-        size = len(parent1)
-        
-        # Choose crossover points
-        start = np.random.randint(0, size)
-        end = np.random.randint(start + 1, size + 1)
-        
-        # Create offspring
-        offspring1 = [-1] * size
-        offspring2 = [-1] * size
-        
-        # Copy segments
-        offspring1[start:end] = parent1[start:end]
-        offspring2[start:end] = parent2[start:end]
-        
-        # Fill remaining positions
-        self._fill_offspring(offspring1, parent2, start, end)
-        self._fill_offspring(offspring2, parent1, start, end)
-        
-        return offspring1, offspring2
-    
-    def _fill_offspring(self, offspring, parent, start, end):
-        """Fill offspring with remaining genes in order"""
-        remaining = [gene for gene in parent if gene not in offspring[start:end]]
-        
-        # Fill before segment
-        for i in range(start):
-            if offspring[i] == -1:
-                offspring[i] = remaining.pop(0)
-        
-        # Fill after segment
-        for i in range(end, len(offspring)):
-            if offspring[i] == -1:
-                offspring[i] = remaining.pop(0)
-    
-    def _mutate(self, individual):
-        """Mutation operator - swap two random positions"""
-        mutated = individual.copy()
-        
-        # Choose mutation type randomly
-        mutation_type = np.random.choice(['swap', 'inversion', 'insertion'])
-        
-        if mutation_type == 'swap':
-            # Swap mutation
-            i, j = np.random.choice(len(mutated), 2, replace=False)
-            mutated[i], mutated[j] = mutated[j], mutated[i]
-        
-        elif mutation_type == 'inversion':
-            # Inversion mutation
-            start = np.random.randint(0, len(mutated))
-            end = np.random.randint(start + 1, len(mutated) + 1)
-            mutated[start:end] = reversed(mutated[start:end])
-        
-        elif mutation_type == 'insertion':
-            # Insertion mutation
-            i = np.random.randint(0, len(mutated))
-            j = np.random.randint(0, len(mutated))
-            element = mutated.pop(i)
-            mutated.insert(j, element)
-        
-        return mutated
-    
-    def _distance(self, pos1, pos2):
-        """Calculate Euclidean distance between two positions"""
-        return math.sqrt((pos1['x'] - pos2['x'])**2 + (pos1['y'] - pos2['y'])**2)
-
-
 class EnhancedPathOptimizer:
     """Enhanced path optimization focusing on coverage maximization and distance minimization"""
     
@@ -723,28 +368,7 @@ class DroneSwarm:
                 'width': size * 2,
                 'height': size * 2
             }
-        elif self.area_shape == 'cross':
-            # Cross shape
-            size = min(self.area_width, self.area_height) / 2
-            return {
-                'x_min': -size,
-                'x_max': size,
-                'y_min': -size,
-                'y_max': size,
-                'width': size * 2,
-                'height': size * 2
-            }
-        elif self.area_shape == 'L_shape':
-            # L-shape
-            size = min(self.area_width, self.area_height)
-            return {
-                'x_min': -size/2,
-                'x_max': size/2,
-                'y_min': -size/2,
-                'y_max': size/2,
-                'width': size,
-                'height': size
-            }
+
         else:  # rectangle or square
             return {
                 'x_min': -self.area_width/2,
@@ -836,28 +460,6 @@ class DroneSwarm:
             size = min(self.area_width, self.area_height) / 2
             # Diamond is |x| + |y| <= size
             return abs(x) + abs(y) <= size
-        elif self.area_shape == 'cross':
-            # Cross shape (+ symbol)
-            size = min(self.area_width, self.area_height) / 2
-            arm_width = size / 3  # Arms are 1/3 of total size
-            
-            # Vertical arm
-            vertical_arm = abs(x) <= arm_width and abs(y) <= size
-            # Horizontal arm  
-            horizontal_arm = abs(y) <= arm_width and abs(x) <= size
-            
-            return vertical_arm or horizontal_arm
-        elif self.area_shape == 'L_shape':
-            # L-shape
-            size = min(self.area_width, self.area_height) / 2
-            arm_width = size / 2  # Each arm is half the total size
-            
-            # Bottom horizontal part: -size <= x <= 0, -size <= y <= -size + arm_width
-            bottom_part = (-size <= x <= 0) and (-size <= y <= -size + arm_width)
-            # Vertical part: -size <= x <= -size + arm_width, -size <= y <= size  
-            vertical_part = (-size <= x <= -size + arm_width) and (-size <= y <= size)
-            
-            return bottom_part or vertical_part
         else:  # rectangle or square
             return (-self.area_width/2 <= x <= self.area_width/2 and 
                     -self.area_height/2 <= y <= self.area_height/2)
@@ -1322,20 +924,12 @@ class LiveDroneSwarmSimulation:
 
         self.enhanced_optimizer = EnhancedPathOptimizer(self.camera_fov, self.altitude)
 
-        # Initialize Genetic Algorithm optimizer
-        self.ga_optimizer = GeneticAlgorithmPathOptimizer(
-            population_size=30,  # Smaller for real-time performance
-            generations=50,      # Reasonable for interactive use
-            mutation_rate=0.15,
-            crossover_rate=0.8,
-            elite_ratio=0.2
-        )
 
         self.gp_colorbar = None
         self.acq_colorbar = None
         self.param_colorbar = None
         
-        # Dynamic assignment parameters
+        # Dynamic assignment parameters - Please set the values here for setting your swarm behavior preference
         self.overlap_penalty = 2.0  # Penalty for covering same areas
         self.distance_weight = 0.5  # Weight for distance in assignment
         self.coverage_weight = 1.5  # Weight for coverage potential
@@ -1449,7 +1043,7 @@ class LiveDroneSwarmSimulation:
         
         ttk.Label(row1, text="Building Shape:").grid(row=0, column=0, sticky='w', padx=(0, 5))
         shape_combo = ttk.Combobox(row1, textvariable=self.area_shape_var, width=12,
-                                  values=['rectangle', 'square', 'circle', 'triangle', 'hexagon', 'pentagon', 'octagon', 'diamond', 'cross', 'L_shape'], 
+                                  values=['rectangle', 'square', 'circle', 'triangle', 'hexagon', 'pentagon', 'octagon', 'diamond'], 
                                   state='readonly')
         shape_combo.grid(row=0, column=1, padx=(0, 15))
         shape_combo.bind('<<ComboboxSelected>>', lambda e: self.on_shape_change())
@@ -1529,7 +1123,7 @@ class LiveDroneSwarmSimulation:
         self.path_strategy_var = tk.StringVar(value='hybrid')
         ttk.Label(row5, text="Path Strategy:").grid(row=0, column=0, sticky='w', padx=(0, 5))
         path_combo = ttk.Combobox(row5, textvariable=self.path_strategy_var, width=12,
-                                 values=['enhanced_coverage', 'enhanced_hybrid', 'smart_pov', 'coverage', 'hybrid', 'nearest', 'tsp_optimized', 'genetic_algorithm'], 
+                                 values=['enhanced_coverage', 'enhanced_hybrid', 'smart_pov', 'coverage', 'hybrid'], 
                                  state='readonly')
         path_combo.grid(row=0, column=1, padx=(0, 15))
         path_combo.bind('<<ComboboxSelected>>', lambda e: self.on_parameter_change())
@@ -1874,10 +1468,6 @@ class LiveDroneSwarmSimulation:
             self.generate_polygon_grid(bounds, safety_margin, effective_grid_x, effective_grid_y)
         elif self.area_shape == 'diamond':
             self.generate_diamond_grid(bounds, safety_margin, effective_grid_x, effective_grid_y)
-        elif self.area_shape == 'cross':
-            self.generate_cross_grid(bounds, safety_margin, effective_grid_x, effective_grid_y)
-        elif self.area_shape == 'L_shape':
-            self.generate_l_shape_grid(bounds, safety_margin, effective_grid_x, effective_grid_y)
         else:
             # Rectangle/square - use original rectangular grid
             self.generate_rectangular_grid(bounds, safety_margin, effective_grid_x, effective_grid_y)
@@ -2063,112 +1653,7 @@ class LiveDroneSwarmSimulation:
                 if self.point_in_building(point):
                     self.global_grid_points.append(point)
     
-    def generate_cross_grid(self, bounds, safety_margin, grid_x, grid_y):
-        """Generate grid points for cross shape"""
-        size = min(self.area_width, self.area_height) / 2
-        arm_width = size / 3
-        safe_size = size - safety_margin
-        safe_arm_width = arm_width - safety_margin/2
         
-        # Generate points in vertical arm
-        for row in range(grid_y):
-            y_progress = row / (grid_y - 1) if grid_y > 1 else 0.5
-            y = -safe_size + y_progress * 2 * safe_size
-            
-            # Vertical arm width
-            points_in_row = max(1, int(grid_x * safe_arm_width / safe_size))
-            
-            for col in range(points_in_row):
-                if points_in_row == 1:
-                    x = 0
-                else:
-                    x_progress = col / (points_in_row - 1)
-                    x = -safe_arm_width + x_progress * 2 * safe_arm_width
-                
-                point = {
-                    'x': x, 'y': y,
-                    'covered': False, 'assigned_drone': -1,
-                    'priority': 1.0, 'coverage_count': 0
-                }
-                
-                if self.point_in_building(point):
-                    self.global_grid_points.append(point)
-        
-        # Generate points in horizontal arm
-        for col in range(grid_x):
-            x_progress = col / (grid_x - 1) if grid_x > 1 else 0.5
-            x = -safe_size + x_progress * 2 * safe_size
-            
-            # Only add points in horizontal arm area that aren't already covered by vertical arm
-            if abs(x) > safe_arm_width:  # Outside vertical arm
-                points_in_col = max(1, int(grid_y * safe_arm_width / safe_size))
-                
-                for row in range(points_in_col):
-                    if points_in_col == 1:
-                        y = 0
-                    else:
-                        y_progress = row / (points_in_col - 1)
-                        y = -safe_arm_width + y_progress * 2 * safe_arm_width
-                    
-                    point = {
-                        'x': x, 'y': y,
-                        'covered': False, 'assigned_drone': -1,
-                        'priority': 1.0, 'coverage_count': 0
-                    }
-                    
-                    if self.point_in_building(point):
-                        self.global_grid_points.append(point)
-    
-    def generate_l_shape_grid(self, bounds, safety_margin, grid_x, grid_y):
-        """Generate grid points for L-shape"""
-        size = min(self.area_width, self.area_height) / 2
-        arm_width = size / 2
-        safe_size = size - safety_margin
-        safe_arm_width = arm_width - safety_margin/2
-        
-        # Generate points in vertical part of L
-        for row in range(grid_y):
-            y_progress = row / (grid_y - 1) if grid_y > 1 else 0.5
-            y = -safe_size + y_progress * 2 * safe_size
-            
-            # Vertical arm
-            points_in_row = max(1, int(grid_x * safe_arm_width / safe_size / 2))
-            
-            for col in range(points_in_row):
-                if points_in_row == 1:
-                    x = -safe_size + safe_arm_width/2
-                else:
-                    x_progress = col / (points_in_row - 1)
-                    x = -safe_size + x_progress * safe_arm_width
-                
-                point = {
-                    'x': x, 'y': y,
-                    'covered': False, 'assigned_drone': -1,
-                    'priority': 1.0, 'coverage_count': 0
-                }
-                
-                if self.point_in_building(point):
-                    self.global_grid_points.append(point)
-        
-        # Generate points in horizontal part of L (bottom only)
-        horizontal_rows = max(1, int(grid_y * safe_arm_width / safe_size / 2))
-        for row in range(horizontal_rows):
-            y_progress = row / (horizontal_rows - 1) if horizontal_rows > 1 else 0.5
-            y = -safe_size + y_progress * safe_arm_width
-            
-            # Horizontal arm (excluding area already covered by vertical arm)
-            for col in range(grid_x):
-                x_progress = col / (grid_x - 1) if grid_x > 1 else 0.5
-                x = -safe_size + safe_arm_width + x_progress * (safe_size - safe_arm_width)
-                
-                point = {
-                    'x': x, 'y': y,
-                    'covered': False, 'assigned_drone': -1,
-                    'priority': 1.0, 'coverage_count': 0
-                }
-                
-                if self.point_in_building(point):
-                    self.global_grid_points.append(point)
     
     def generate_rectangular_grid(self, bounds, safety_margin, grid_x, grid_y):
         """Generate grid points for rectangular/square buildings (original method)"""
@@ -3622,7 +3107,7 @@ class LiveDroneSwarmSimulation:
         shape_factors = {
             'rectangle': 1.0, 'square': 1.0, 'circle': 0.9,
             'triangle': 0.8, 'hexagon': 1.1, 'pentagon': 1.1,
-            'octagon': 1.1, 'diamond': 0.9, 'cross': 1.3, 'L_shape': 1.3
+            'octagon': 1.1, 'diamond': 0.9
         }
         shape_factor = shape_factors.get(self.area_shape, 1.0)
         
@@ -4595,34 +4080,7 @@ class LiveDroneSwarmSimulation:
             ]
             diamond = Polygon(diamond_points, fill=False, edgecolor='black', linewidth=3)
             self.ax.add_patch(diamond)
-        elif self.area_shape == 'cross':
-            # Draw cross shape
-            size = min(self.area_width, self.area_height) / 2
-            arm_width = size / 3
-            
-            # Vertical arm
-            vertical_rect = Rectangle((-arm_width, -size), arm_width*2, size*2,
-                                    fill=False, edgecolor='black', linewidth=3)
-            self.ax.add_patch(vertical_rect)
-            
-            # Horizontal arm
-            horizontal_rect = Rectangle((-size, -arm_width), size*2, arm_width*2,
-                                      fill=False, edgecolor='black', linewidth=3)
-            self.ax.add_patch(horizontal_rect)
-        elif self.area_shape == 'L_shape':
-            # Draw L-shape
-            size = min(self.area_width, self.area_height) / 2
-            arm_width = size / 2
-            
-            # Bottom horizontal part
-            bottom_rect = Rectangle((-size, -size), size, arm_width,
-                                  fill=False, edgecolor='black', linewidth=3)
-            self.ax.add_patch(bottom_rect)
-            
-            # Vertical part
-            vertical_rect = Rectangle((-size, -size), arm_width, size*2,
-                                    fill=False, edgecolor='black', linewidth=3)
-            self.ax.add_patch(vertical_rect)
+
         else:
             # Draw rectangle/square
             boundary_rect = Rectangle((bounds['x_min'], bounds['y_min']), 
