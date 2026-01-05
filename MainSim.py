@@ -1,3 +1,18 @@
+"""
+Copyright (c) 2025 Lalu Muhamad Alhadad
+
+This code was developed as part of a Master's thesis under the
+Faculty of Mechanical and Aerospace Engineering,
+Institut Teknologi Bandung (ITB).
+
+Based on gym-pybullet-drones developed by the University of Cambridge,
+Prorok Lab (MIT License). Modifications include control logic adaptation,
+flight dynamics limiters, and PID-based trajectory tracking.
+
+Licensed under the MIT License. See LICENSE file for details.
+"""
+
+
 # Modified simulation with easy waypoint and swarm parameter input
 # Based on your existing PyBullet simulation code
 
@@ -5554,5 +5569,6 @@ if __name__ == "__main__":
     parser.add_argument('--output_folder',      default=DEFAULT_OUTPUT_FOLDER, type=str,           help='Folder where to save logs (default: "results")', metavar='')
     parser.add_argument('--colab',              default=DEFAULT_COLAB, type=bool,           help='Whether example is being run by a notebook (default: "False")', metavar='')
     ARGS = parser.parse_args()
+
 
     run(**vars(ARGS))
