@@ -1,3 +1,14 @@
+"""
+Copyright (c) 2026 Lalu Muhamad Alhadad
+
+This code was developed as part of a Master's thesis under the
+Faculty of Mechanical and Aerospace Engineering,
+Institut Teknologi Bandung (ITB).
+
+Licensed under the MIT License. See LICENSE file for details.
+"""
+
+
 import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
